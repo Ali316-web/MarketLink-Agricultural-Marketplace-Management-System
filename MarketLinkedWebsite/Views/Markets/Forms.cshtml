@@ -1,0 +1,48 @@
+﻿@using MarketLink.Admin.Models.Entities
+@using MarketLink.Admin.Models.Enums
+@model Market
+@{
+    var editing = Model.Id != 0;
+    ViewData["Title"] = editing ? "Edit market" : "Add market";
+}
+<div class="page-head">
+    <div><h1>@(editing ? "Edit market" : "Add market")</h1><p><a asp-action="Index">← Back to markets</a></p></div>
+</div>
+
+<div class="panel" style="max-width:640px">
+    <form method="post" asp-action="@(editing ? "Edit" : "Create")" asp-route-id="@(editing ? Model.Id.ToString() : null)" novalidate>
+        <input type="hidden" asp-for="Id" />
+
+        <div class="field"><label asp-for="Name">Market name</label><input asp-for="Name" type="text" /></div>
+        <div class="field"><label asp-for="Address"></label><input asp-for="Address" type="text" /></div>
+
+        <div class="field">
+            <label>Operating days</label>
+            <div class="checks">
+                @foreach (var d in Enum.GetValues<MarketDays>().Where(d => d != MarketDays.None))
+                {
+                    <label><input type="checkbox" name="days" value="@d" checked="@Model.OpenDays.HasFlag(d)" />@d.ToString()[..3]</label>
+                }
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="field"><label asp-for="OpenTime">Opens</label><input asp-for="OpenTime" type="time" /></div>
+            <div class="field"><label asp-for="CloseTime">Closes</label><input asp-for="CloseTime" type="time" /></div>
+        </div>
+        <div class="row">
+            <div class="field"><label asp-for="Latitude"></label><input asp-for="Latitude" type="number" step="any" /></div>
+            <div class="field"><label asp-for="Longitude"></label><input asp-for="Longitude" type="number" step="any" /></div>
+        </div>
+
+        <div class="field"><label asp-for="Provider">Map provider</label><select asp-for="Provider" asp-items="Html.GetEnumSelectList<MapProvider>()"></select></div>
+        <div class="field"><label asp-for="MapEmbedUrl">Embedded map link (optional)</label><input asp-for="MapEmbedUrl" type="text" placeholder="https://" /></div>
+
+        <div class="err" role="alert" asp-validation-summary="All"></div>
+
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+            <a class="btn" asp-action="Index">Cancel</a>
+            <button class="btn primary" type="submit">Save market</button>
+        </div>
+    </form>
+</div>

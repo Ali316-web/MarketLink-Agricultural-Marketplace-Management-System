@@ -1,0 +1,14 @@
+﻿@using MarketLink.Admin.Models.Enums
+
+@model Enum
+@{
+    var cls = Model switch
+    {
+        FarmerStatus.Pending or OrderStatus.Placed or OrderStatus.Accepted => "warn",
+        FarmerStatus.Suspended => "bad",
+        CustomerStatus.Inactive or OrderStatus.Cancelled => "off",
+        _ => ""
+    };
+    var text = Model is OrderStatus.ReadyForPickup ? "Ready for pickup" : Model.ToString();
+}
+<span class="badge @cls">@text</span>

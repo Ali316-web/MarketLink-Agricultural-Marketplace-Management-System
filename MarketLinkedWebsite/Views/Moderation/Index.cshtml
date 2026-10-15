@@ -1,0 +1,96 @@
+﻿@using MarketLink.Admin.Models.Entities
+@{
+    ViewData["Title"] = "Content moderation";
+    var tab = (string)ViewBag.Tab;
+    var products = (List<Product>)ViewBag.Products;
+    var reviews = (List<Review>)ViewBag.Reviews;
+    var flaggedProducts = products.Count(p => p.IsFlagged);
+    var flaggedReviews = reviews.Count(r => r.IsFlagged);
+}
+<div class="page-head"><div><h1>Content moderation</h1><p>Remove listings or reviews that break platform guidelines.</p></div></div>
+
+<form method="get" asp-action="Index" class="tabs" role="tablist">
+    <button type="submit" name="tab" value="products" role="tab" aria-selected="@(tab == "products" ? "true" : "false")">Product listings (@products.Count)</button>
+    <button type="submit" name="tab" value="reviews" role="tab" aria-selected="@(tab == "reviews" ? "true" : "false")">Reviews (@reviews.Count)</button>
+</form>
+
+@if (tab == "products")
+{
+    <div class="tablewrap">
+        @if (products.Count == 0)
+        {
+            <partial name="_Empty" model="@("No product listings.")" />
+        }
+        else
+        {
+            <table>
+                <thead><tr><th>Product</th><th>Farmer</th><th>Category</th><th>Price</th><th>Flag</th><th></th></tr></thead>
+                <tbody>
+                    @foreach (var p in products)
+                    {
+                        <tr>
+                            <td><b>@p.Name</b></td>
+                            <td>@p.Farmer?.StallName</td>
+                            <td>@p.Category?.Name</td>
+                            <td>$@p.Price.ToString("0.00") / @p.Unit</td>
+                            <td>@if (p.IsFlagged) {
+                                <span class="badge bad">@p.FlagReason</span>
+                            } else
+                            {
+
+                                <span class="muted small">None</span>
+                            }
+                        </td>
+                        <td class="act">
+                            <form class="inline" asp-action="DeleteProduct" asp-route-id="@p.Id" method="post"
+                                  data-confirm="@($"\"{p.Name}\" will be removed from {p.Farmer?.StallName}'s listings.")" data-confirm-label="Remove">
+                                <button class="btn sm danger" type="submit">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+<p class="muted small" style="margin-top:10px">@flaggedProducts flagged listing@(flaggedProducts == 1 ? "" : "s").</p>
+}
+else
+{
+    <div class="tablewrap">
+        @if (reviews.Count == 0)
+        {
+            <partial name="_Empty" model="@("No reviews.")" />
+        }
+        else
+        {
+            <table>
+                <thead><tr><th>Review</th><th>Rating</th><th>Flag</th><th></th></tr></thead>
+                <tbody>
+                    @foreach (var r in reviews)
+                    {
+                        <tr>
+                            <td><b>@r.Customer?.Name</b> on @r.Farmer?.StallName<div class="muted small">@r.Comment</div></td>
+                            <td><span class="stars">@(new string('★', r.Rating))@(new string('☆', 5 - r.Rating))</span></td>
+                            <td>@if (r.IsFlagged) {
+                                <span class="badge bad">@r.FlagReason</span>
+                            } else
+                            {
+
+                                <span class="muted small">None</span>
+                            }
+                        </td>
+                        <td class="act">
+                            <form class="inline" asp-action="DeleteReview" asp-route-id="@r.Id" method="post"
+                                  data-confirm="This review will be permanently removed." data-confirm-label="Remove">
+                                <button class="btn sm danger" type="submit">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+<p class="muted small" style="margin-top:10px">@flaggedReviews flagged review@(flaggedReviews == 1 ? "" : "s").</p>
+}

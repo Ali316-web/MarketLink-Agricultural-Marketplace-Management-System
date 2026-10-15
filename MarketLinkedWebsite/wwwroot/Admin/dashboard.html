@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dashboard · MarketLink Admin</title>
+<link rel="stylesheet" href="css/style.css">
+<script src="js/theme.js"></script>
+</head>
+<body data-page="dashboard">
+<div id="app">
+  <aside id="side">
+    <div class="brand">MarketLink<span>Admin dashboard</span></div>
+    <nav id="nav" aria-label="Main"></nav>
+    <div class="side-foot">
+      <div>Signed in as<br><b>Admin</b></div>
+      <button class="btn block" data-a="theme" aria-pressed="false">Dark mode</button>
+    </div>
+  </aside>
+  <div>
+    <div class="topbar">
+      <strong>MarketLink Admin</strong>
+      <button class="btn sm" data-a="menu" aria-label="Open menu">Menu</button>
+    </div>
+    <main id="view"></main>
+  </div>
+</div>
+<dialog id="dlg"></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="js/common.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

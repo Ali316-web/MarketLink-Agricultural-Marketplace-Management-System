@@ -1,0 +1,109 @@
+﻿@{
+    // Which controller is open right now (used to highlight the active link).
+    var current = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    string? Page(string controller) => current == controller ? "page" : null;
+
+    var success = TempData["Success"] as string;
+    var error = TempData["Error"] as string;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>@ViewData["Title"] · MarketLink Admin</title>
+    <link rel="stylesheet" href="~/css/style.css" />
+    <script src="~/js/theme.js"></script>
+    <style>
+            a.btn {
+                text-decoration: none;
+                color: inherit;
+            }
+
+                a.btn.primary {
+                    color: var(--accent-ink);
+                }
+
+            form.inline {
+                display: inline;
+                margin: 0;
+            }
+
+            nav a {
+                text-decoration: none;
+            }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <aside id="side">
+            <div class="brand">MarketLink<span>Admin dashboard</span></div>
+            <nav id="nav" aria-label="Main">
+                <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" aria-current="@Page("Dashboard")">Dashboard</a>
+                <a asp-area="Admin" asp-controller="Farmers" asp-action="Index" aria-current="@Page("Farmers")">Farmers</a>
+                <a asp-area="Admin" asp-controller="Customers" asp-action="Index" aria-current="@Page("Customers")">Customers</a>
+                <a asp-area="Admin" asp-controller="Markets" asp-action="Index" aria-current="@Page("Markets")">Markets</a>
+                <a asp-area="Admin" asp-controller="Moderation" asp-action="Index" aria-current="@Page("Moderation")">Content moderation</a>
+                <a asp-area="Admin" asp-controller="Reports" asp-action="Index" aria-current="@Page("Reports")">Reports</a>
+                <a asp-area="Admin" asp-controller="Settings" asp-action="Index" aria-current="@Page("Settings")">System configuration</a>
+            </nav>
+            <div class="side-foot">
+                <div>Signed in as<br /><b>@(User.Identity?.Name ?? "Admin")</b></div>
+                <button class="btn block" type="button" data-a="theme" aria-pressed="false">Dark mode</button>
+                <form asp-area="Admin" asp-controller="Account" asp-action="Logout" method="post">
+                    <button class="btn block" type="submit">Sign out</button>
+                </form>
+            </div>
+        </aside>
+        <div>
+            <div class="topbar">
+                <strong>MarketLink Admin</strong>
+                <button class="btn sm" type="button" id="menu-btn" aria-label="Open menu">Menu</button>
+            </div>
+            <main id="view">
+                @if (!string.IsNullOrEmpty(error))
+                {
+                    <div class="err" role="alert">@error</div>
+                }
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <dialog id="dlg"></dialog>
+    <div id="toast" role="status" aria-live="polite">@success</div>
+
+    <script>
+            (function () {
+                var dlg = document.getElementById("dlg");
+                var toast = document.getElementById("toast");
+                var side = document.getElementById("side");
+
+                // Success message from TempData shown as a toast.
+                if (toast.textContent.trim()) {
+                    toast.classList.add("on");
+                    setTimeout(function () { toast.classList.remove("on"); }, 2400);
+                }
+
+                document.getElementById("menu-btn").addEventListener("click", function () { side.classList.toggle("open"); });
+
+                function esc(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+
+                // Any form with data-confirm asks first: <form data-confirm="Message" data-confirm-label="Delete">
+                document.addEventListener("submit", function (e) {
+                    var form = e.target;
+                    if (!form.dataset || !form.dataset.confirm) return;
+                    e.preventDefault();
+                    var label = form.dataset.confirmLabel || "Confirm";
+                    dlg.innerHTML = '<div class="dlg"><h2>' + esc(label) + '?</h2><p class="muted">' + esc(form.dataset.confirm) +
+                        '</p><div class="foot"><button type="button" class="btn" id="dlg-no">Cancel</button>' +
+                        '<button type="button" class="btn danger" id="dlg-yes">' + esc(label) + '</button></div></div>';
+                    dlg.showModal();
+                    document.getElementById("dlg-no").onclick = function () { dlg.close(); };
+                    document.getElementById("dlg-yes").onclick = function () { dlg.close(); form.submit(); };
+                });
+            })();
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

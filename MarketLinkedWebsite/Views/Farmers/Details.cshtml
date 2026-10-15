@@ -1,0 +1,51 @@
+﻿@using MarketLink.Admin.Models.Entities
+@model Farmer
+@{
+    ViewData["Title"] = Model.StallName;
+}
+<div class="page-head">
+    <div><h1>@Model.StallName</h1><p><a asp-action="Index">← Back to farmers</a></p></div>
+</div>
+
+<div class="panel" style="margin-bottom:24px">
+    <dl class="kv">
+        <dt>Status</dt>
+        <dd><partial name="_Badge" model="Model.Status" /></dd>
+        <dt>Contact person</dt>
+        <dd>@Model.ContactName</dd>
+        <dt>Phone</dt>
+        <dd>@Model.Phone</dd>
+        <dt>Email</dt>
+        <dd>@Model.Email</dd>
+        <dt>Market</dt>
+        <dd>@(Model.Market?.Name ?? "Unassigned")</dd>
+        <dt>Joined</dt>
+        <dd>@Model.JoinedOn.ToString("yyyy-MM-dd")</dd>
+        <dt>Orders</dt>
+        <dd>@Model.TotalOrders</dd>
+        <dt>Revenue</dt>
+        <dd>$@Model.TotalRevenue.ToString("N0")</dd>
+    </dl>
+</div>
+
+<div class="panel">
+    <h2>Products</h2>
+    @if (Model.Products.Count == 0)
+    {
+        <partial name="_Empty" model="@("This farmer has no product listings.")" />
+    }
+    else
+    {
+        <div class="tablewrap">
+            <table>
+                <thead><tr><th>Product</th><th>Category</th><th>Price</th></tr></thead>
+                <tbody>
+                    @foreach (var p in Model.Products)
+                    {
+                        <tr><td><b>@p.Name</b></td><td>@p.Category?.Name</td><td>$@p.Price.ToString("0.00") / @p.Unit</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

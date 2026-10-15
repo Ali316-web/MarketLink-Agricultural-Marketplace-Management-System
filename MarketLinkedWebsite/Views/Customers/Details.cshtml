@@ -1,0 +1,47 @@
+﻿@using MarketLink.Admin.Models.Entities
+@model Customer
+@{
+    ViewData["Title"] = Model.Name;
+}
+<div class="page-head">
+    <div><h1>@Model.Name</h1><p><a asp-action="Index">← Back to customers</a></p></div>
+</div>
+
+<div class="panel" style="margin-bottom:24px">
+    <dl class="kv">
+        <dt>Status</dt>
+        <dd><partial name="_Badge" model="Model.Status" /></dd>
+        <dt>Email</dt>
+        <dd>@Model.Email</dd>
+        <dt>Phone</dt>
+        <dd>@Model.Phone</dd>
+        <dt>Address</dt>
+        <dd>@Model.Address</dd>
+        <dt>Joined</dt>
+        <dd>@Model.JoinedOn.ToString("yyyy-MM-dd")</dd>
+        <dt>Orders</dt>
+        <dd>@Model.TotalOrders</dd>
+    </dl>
+</div>
+
+<div class="panel">
+    <h2>Orders</h2>
+    @if (Model.Orders.Count == 0)
+    {
+        <partial name="_Empty" model="@("No orders yet.")" />
+    }
+    else
+    {
+        <div class="tablewrap">
+            <table>
+                <thead><tr><th>Order</th><th>Farmer</th><th>Total</th><th>Status</th></tr></thead>
+                <tbody>
+                    @foreach (var o in Model.Orders.OrderByDescending(o => o.PlacedAt))
+                    {
+                        <tr><td>@o.Number</td><td>@o.Farmer?.StallName</td><td>$@o.Total.ToString("0.00")</td><td><partial name="_Badge" model="o.Status" /></td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

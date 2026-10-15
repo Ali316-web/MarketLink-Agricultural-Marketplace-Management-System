@@ -1,0 +1,63 @@
+﻿@using MarketLink.Admin.Models.Entities
+@using MarketLink.Admin.Models.Enums
+@model List<Farmer>
+@{
+    ViewData["Title"] = "Farmers";
+    var status = (FarmerStatus?)ViewBag.Status;
+    var here = Url.Action("Index", "Farmers", new { search = (string?)ViewBag.Search, status });
+}
+<div class="page-head"><div><h1>Farmers</h1><p>Approve registrations before farmers can list products.</p></div></div>
+
+<form class="toolbar" method="get" asp-action="Index">
+    <input type="search" name="search" value="@ViewBag.Search" placeholder="Search stall, contact or email" aria-label="Search farmers" />
+    <select name="status" aria-label="Filter by status" onchange="this.form.submit()">
+        <option value="">All</option>
+        @foreach (var s in Enum.GetValues<FarmerStatus>())
+        {
+            <option value="@s" selected="@(status == s)">@s</option>
+        }
+    </select>
+</form>
+
+<div class="tablewrap">
+    @if (Model.Count == 0)
+    {
+        <partial name="_Empty" model="@("No farmers match your filters.")" />
+    }
+    else
+    {
+        <table>
+            <thead><tr><th>Stall</th><th>Contact</th><th>Market</th><th>Status</th><th>Joined</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var f in Model)
+                {
+                    <tr>
+                        <td><b>@f.StallName</b></td>
+                        <td>@f.ContactName<div class="muted small">@f.Email</div></td>
+                        <td>@(f.Market?.Name ?? "Unassigned")</td>
+                        <td><partial name="_Badge" model="f.Status" /></td>
+                        <td>@f.JoinedOn.ToString("yyyy-MM-dd")</td>
+                        <td class="act">
+                            <a class="btn sm" asp-action="Details" asp-route-id="@f.Id">View</a>
+                            @if (f.Status != FarmerStatus.Approved)
+                            {
+                                <form class="inline" asp-action="Approve" asp-route-id="@f.Id" method="post">
+                                    <input type="hidden" name="returnUrl" value="@here" />
+                                    <button class="btn sm primary" type="submit">@(f.Status == FarmerStatus.Suspended ? "Reinstate" : "Approve")</button>
+                                </form>
+                            }
+                            @if (f.Status != FarmerStatus.Suspended)
+                            {
+                                <form class="inline" asp-action="Suspend" asp-route-id="@f.Id" method="post"
+                                      data-confirm="@($"{f.StallName} will not be able to list products until reinstated.")" data-confirm-label="Suspend">
+                                    <input type="hidden" name="returnUrl" value="@here" />
+                                    <button class="btn sm danger" type="submit">Suspend</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

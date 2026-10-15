@@ -1,0 +1,18 @@
+﻿@{
+    Layout = "_adminLayout";
+    ViewData["Title"] = "Sign in";
+    var error = ViewData["Error"] as string;
+    var ok = TempData["Success"] as string;
+}
+<form class="login-box" asp-controller="Account" asp-action="Login" method="post">
+    <h1>MarketLink Admin</h1>
+    <p class="sub">Sign in to manage farmers, customers and markets.</p>
+    <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+    <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="username" /></div>
+    <div class="field"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" /></div>
+    <div class="field"><label class="checks"><input type="checkbox" name="rememberMe" value="true" /> Remember me</label></div>
+    <div class="err" role="alert">@error</div>
+    <div class="ok" role="status">@ok</div>
+    <button class="btn primary block" type="submit">Sign in</button>
+    <p class="alt">New here? <a asp-controller="Account" asp-action="Register">Create an account</a></p>
+</form>

@@ -1,0 +1,94 @@
+﻿@using MarketLink.Admin.Models.Entities
+@{
+    ViewData["Title"] = "Dashboard";
+    var weekly = (List<int>)ViewBag.OrdersPerWeek;
+    var pending = (List<Farmer>)ViewBag.FarmersAwaitingApproval;
+    var recent = (List<Order>)ViewBag.RecentOrders;
+    var announcements = (List<Announcement>)ViewBag.LatestAnnouncements;
+    var max = Math.Max(1, weekly.DefaultIfEmpty(0).Max());
+    var here = Url.Action("Index", "Dashboard");
+}
+<div class="page-head"><div><h1>Dashboard</h1><p>Platform overview</p></div></div>
+
+<div class="stats">
+    <div class="stat"><div class="n">@ViewBag.TotalFarmers</div><div class="l">Total farmers</div></div>
+    <div class="stat"><div class="n">@ViewBag.TotalCustomers</div><div class="l">Total customers</div></div>
+    <div class="stat"><div class="n">@ViewBag.TotalMarkets</div><div class="l">Total markets</div></div>
+    <div class="stat"><div class="n">@(((int)ViewBag.TotalOrders).ToString("N0"))</div><div class="l">Total orders</div></div>
+</div>
+
+<div class="grid2">
+    <div class="panel">
+        <h2>Orders per week</h2>
+        <svg viewBox="0 0 400 145" width="100%" role="img" aria-label="Bar chart of orders for the last 8 weeks">
+            @for (var i = 0; i < weekly.Count; i++)
+            {
+                var v = weekly[i];
+                var h = (int)Math.Round(v / (double)max * 100);
+                var x = 10 + i * 48;
+                <rect x="@x" y="@(120 - h)" width="30" height="@h" rx="3" fill="var(--accent)" opacity="@(i == weekly.Count - 1 ? "1" : "0.45")" />
+                <svg:text x="@(x + 15)" y="136" text-anchor="middle" font-size="10" fill="var(--muted)">W@(i + 1)</svg:text>
+                <svg:text x="@(x + 15)" y="@(114 - h)" text-anchor="middle" font-size="10" fill="var(--text)">@v</svg:text>
+                  }
+        </svg>
+    </div>
+    <div class="panel">
+        <h2>Farmers awaiting approval</h2>
+        @if (pending.Count == 0)
+        {
+            <partial name="_Empty" model="@("No pending registrations.")" />
+        }
+        else
+        {
+            <ul class="list">
+                @foreach (var f in pending)
+                {
+                    <li>
+                        <div class="t"><b>@f.StallName</b><div class="muted small">@f.ContactName · applied @f.JoinedOn.ToString("yyyy-MM-dd")</div></div>
+                        <form class="inline" asp-controller="Farmers" asp-action="Approve" asp-route-id="@f.Id" method="post">
+                            <input type="hidden" name="returnUrl" value="@here" />
+                            <button class="btn sm primary" type="submit">Approve</button>
+                        </form>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+</div>
+
+<div class="grid2">
+    <div class="panel">
+        <h2>Recent orders</h2>
+        <div class="tablewrap">
+            <table>
+                <thead><tr><th>Order</th><th>Customer</th><th>Farmer</th><th>Total</th><th>Status</th></tr></thead>
+                <tbody>
+                @foreach (var o in recent)
+                {
+                    <tr>
+                        <td>@o.Number</td>
+                        <td>@o.Customer?.Name</td>
+                        <td>@o.Farmer?.StallName</td>
+                        <td>$@o.Total.ToString("0.00")</td>
+                        <td><partial name="_Badge" model="o.Status" /></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="panel">
+        <h2>Latest announcements</h2>
+        @if (announcements.Count == 0)
+        {
+            <partial name="_Empty" model="@("Nothing published yet.")" />
+        }
+        @foreach (var a in announcements)
+        {
+            <div class="ann">
+                <div class="top"><b>@a.Title</b><span class="muted small">@Html.DisplayFor(_ => a.Audience)</span></div>
+                <div class="muted small">@a.Body</div>
+            </div>
+        }
+    </div>
+</div>

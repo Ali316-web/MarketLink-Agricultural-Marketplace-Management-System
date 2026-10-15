@@ -1,0 +1,8 @@
+C:\Users\Hobopk\source\repos\MarketLinkedWebsite\MarketLinkedWebsite\obj\Debug\net10.0\rpswa.dswa.cache.json
+C:\Users\Hobopk\source\repos\MarketLinkedWebsite\MarketLinkedWebsite\obj\Debug\net10.0\MarketLinkedWebsite.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Hobopk\source\repos\MarketLinkedWebsite\MarketLinkedWebsite\obj\Debug\net10.0\MarketLinkedWebsite.AssemblyInfoInputs.cache
+C:\Users\Hobopk\source\repos\MarketLinkedWebsite\MarketLinkedWebsite\obj\Debug\net10.0\MarketLinkedWebsite.AssemblyInfo.cs
+C:\Users\Hobopk\source\repos\MarketLinkedWebsite\MarketLinkedWebsite\obj\Debug\net10.0\MarketLinkedWebsite.csproj.CoreCompileInputs.cache
+C:\Users\Hobopk\source\repos\MarketLinkedWebsite\MarketLinkedWebsite\obj\Debug\net10.0\MarketLinkedWebsite.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Hobopk\source\repos\MarketLinkedWebsite\MarketLinkedWebsite\obj\Debug\net10.0\MarketLinkedWebsite.RazorAssemblyInfo.cache
+C:\Users\Hobopk\source\repos\MarketLinkedWebsite\MarketLinkedWebsite\obj\Debug\net10.0\MarketLinkedWebsite.RazorAssemblyInfo.cs

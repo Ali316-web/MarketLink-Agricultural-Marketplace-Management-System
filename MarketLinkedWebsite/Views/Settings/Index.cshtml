@@ -1,0 +1,101 @@
+﻿@using MarketLink.Admin.Models.Entities
+@using MarketLink.Admin.Models.Enums
+@{
+    ViewData["Title"] = "System configuration";
+    var categories = (List<Category>)ViewBag.Categories;
+    var announcements = (List<Announcement>)ViewBag.Announcements;
+}
+<div class="page-head"><div><h1>System configuration</h1><p>Master data and platform-wide announcements.</p></div></div>
+
+<div class="grid2" style="align-items:start">
+    <div class="panel">
+        <h2>Product categories</h2>
+        <div class="chips">
+            @if (categories.Count == 0)
+            {
+                <partial name="_Empty" model="@("No categories.")" />
+            }
+            @foreach (var c in categories)
+            {
+                <span class="chip">
+                    @c.Name
+                    <button type="button" data-rename-id="@c.Id" data-rename-name="@c.Name" aria-label="Rename @c.Name">Edit</button>
+                    <form class="inline" asp-action="DeleteCategory" asp-route-id="@c.Id" method="post"
+                          data-confirm="@($"\"{c.Name}\" will be removed from the category list.")" data-confirm-label="Delete">
+                        <button class="x" type="submit" aria-label="Delete @c.Name">Delete</button>
+                    </form>
+                </span>
+            }
+        </div>
+        <form class="add-row" asp-action="AddCategory" method="post">
+            <input type="text" name="name" maxlength="60" placeholder="New category name" aria-label="New category name" />
+            <button class="btn primary" type="submit">Add category</button>
+        </form>
+    </div>
+
+    <div class="panel">
+        <h2>Publish announcement</h2>
+        <form asp-action="PublishAnnouncement" method="post">
+            <div class="field"><label for="a-title">Title</label><input id="a-title" name="title" type="text" maxlength="120" /></div>
+            <div class="field"><label for="a-body">Message</label><textarea id="a-body" name="body" maxlength="2000"></textarea></div>
+            <div class="field"><label for="a-aud">Audience</label><select id="a-aud" name="audience" asp-items="Html.GetEnumSelectList<AnnouncementAudience>()"></select></div>
+            <button class="btn primary" type="submit">Publish</button>
+        </form>
+    </div>
+</div>
+
+<div class="panel" style="margin-top:24px">
+    <h2>Published announcements</h2>
+    @if (announcements.Count == 0)
+    {
+        <partial name="_Empty" model="@("No announcements yet.")" />
+    }
+    @foreach (var a in announcements)
+    {
+        <div class="ann">
+            <div class="top">
+                <b>@a.Title</b>
+                <span>
+                    <span class="badge off">@Html.DisplayFor(_ => a.Audience)</span>
+                    <form class="inline" asp-action="DeleteAnnouncement" asp-route-id="@a.Id" method="post"
+                          data-confirm="This announcement will be removed for all users." data-confirm-label="Delete">
+                        <button class="btn sm danger" type="submit">Delete</button>
+                    </form>
+                </span>
+            </div>
+            <div class="muted small">@a.Body</div>
+            <div class="muted small">@a.PublishedAt.ToString("yyyy-MM-dd HH:mm")</div>
+        </div>
+    }
+</div>
+
+<dialog id="rename-dlg">
+    <div class="dlg">
+        <h2>Rename category</h2>
+        <form asp-action="RenameCategory" method="post">
+            <input type="hidden" name="id" id="rename-id" />
+            <div class="field"><label for="rename-name">Category name</label><input id="rename-name" name="name" type="text" maxlength="60" /></div>
+            <div class="foot">
+                <button type="button" class="btn" id="rename-cancel">Cancel</button>
+                <button class="btn primary" type="submit">Save</button>
+            </div>
+        </form>
+    </div>
+</dialog>
+
+@section Scripts {
+    <script>
+        (function () {
+            var dlg = document.getElementById("rename-dlg");
+            document.querySelectorAll("[data-rename-id]").forEach(function (b) {
+                b.addEventListener("click", function () {
+                    document.getElementById("rename-id").value = b.dataset.renameId;
+                    document.getElementById("rename-name").value = b.dataset.renameName;
+                    dlg.showModal();
+                    document.getElementById("rename-name").focus();
+                });
+            });
+            document.getElementById("rename-cancel").addEventListener("click", function () { dlg.close(); });
+        })();
+    </script>
+}
